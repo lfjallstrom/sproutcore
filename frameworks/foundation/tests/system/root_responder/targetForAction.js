@@ -6,8 +6,8 @@
 
 /*global module test equals context ok same Q$ htmlbody Dummy */
 
-var r, sender, pane, barView, fooView, defaultResponder;
-var keyPane, mainPane, globalResponder, actionSender ;
+var r, r2, sender, pane, pane2, barView, fooView, defaultResponder;
+var keyPane, mainPane, globalResponder, globalResponderContext, actionSender ;
 
 var CommonSetup = {
   setup: function() { 
@@ -27,6 +27,12 @@ var CommonSetup = {
       globalAction: action 
     });
     
+    // global default responder as a responder context 
+    // set on RootResponder
+    globalResponderContext = SC.Object.create(SC.ResponderContext, {
+      globalAction: action
+    });
+    
     // explicit pane
     pane = SC.Pane.create({ 
       acceptsKeyPane: YES,
@@ -38,7 +44,25 @@ var CommonSetup = {
         })]    
       })],
       
-      paneAction: action 
+      paneAction: action
+       
+    });
+    
+    pane2 = SC.Pane.create({ 
+      acceptsKeyPane: YES,
+      defaultResponder: defaultResponder,
+      childViews: [SC.View.extend({
+        bar: action,  // implement bar action
+        childViews: [SC.View.extend({
+          foo: action // implement foo action
+        })]    
+      })],
+      
+      paneAction: action,
+      
+      keyAction: action,
+      mainAction: action,
+      globalAction: action
     });
     
     keyPane = SC.Pane.create({
@@ -59,6 +83,12 @@ var CommonSetup = {
       defaultResponder: globalResponder 
     }); 
     
+    r2 = SC.RootResponder.create({
+      mainPane: mainPane,
+      keyPane: keyPane,
+      defaultResponder: globalResponderContext
+    });
+    
     barView = pane.childViews[0];
     ok(barView.bar, 'barView should implement bar');
     
@@ -74,8 +104,9 @@ var CommonSetup = {
   },
 
   teardown: function() {
-    r = sender = pane = window.Dummy = barView = fooView = null; 
-    defaultResponder = keyPane = mainPane = globalResponder = null;    
+    r = r2 = sender = pane = window.Dummy = barView = fooView = null; 
+    defaultResponder = keyPane = mainPane = globalResponder = null; 
+    globalResponderContext = null;    
   }
 };
 
@@ -185,14 +216,31 @@ test("no target, explicit pane, no first responder", function() {
 });
 
 test("no target, explicit pane, does not implement action", function() {
-  equals(r.targetForAction('keyAction', null, null, pane), null,
-    'should not return keyPane');
+  equals(r.targetForAction('keyAction', null, null, pane), keyPane,
+    'should return keyPane');
     
-  equals(r.targetForAction('mainAction', null, null, pane), null,
-    'should not return mainPane');
+  equals(r.targetForAction('mainAction', null, null, pane), mainPane,
+    'should return mainPane');
 
-  equals(r.targetForAction('globalAction', null, null, pane), null,
-    'should not return global defaultResponder');
+  equals(r.targetForAction('globalAction', null, null, pane), globalResponder,
+    'should return global defaultResponder');
+      
+  equals(r2.targetForAction('globalAction', null, null, pane), globalResponderContext,
+    'should return global defaultResponder');
+});
+
+test("no target, explicit pane, does implement action", function() {
+  equals(r.targetForAction('keyAction', null, null, pane2), pane2,
+    'should return pane');
+    
+  equals(r.targetForAction('mainAction', null, null, pane2), pane2,
+    'should return pane');
+
+  equals(r.targetForAction('globalAction', null, null, pane2), pane2,
+    'should return pane');
+    
+  equals(r2.targetForAction('globalAction', null, null, pane2), pane2,
+    'should return pane');  
 });
 
 test("no target, no explicit pane", function() {
@@ -201,6 +249,8 @@ test("no target, no explicit pane", function() {
   equals(r.targetForAction('globalAction'), globalResponder,
     'should find global defaultResponder');
   equals(r.targetForAction('imaginaryAction'), null, 'should return null for not-found action');
+  equals(r2.targetForAction('globalAction'), globalResponderContext,
+    'should find global defaultResponder');
 });
 
 // ..........................................................

@@ -1,6 +1,6 @@
 // ==========================================================================
 // Project:   SproutCore - JavaScript Application Framework
-// Copyright: ©2006-2010 Sprout Systems, Inc. and contributors.
+// Copyright: ©2006-2011 Strobe Inc. and contributors.
 //            Portions ©2008-2010 Apple Inc. All rights reserved.
 // License:   Licensed under MIT license (see license.js)
 // ==========================================================================
@@ -127,11 +127,9 @@ SC.TextFieldView = SC.FieldView.extend(SC.StaticLayout, SC.Editable,
   _isFocused: NO,
   
   
-  init:function(){
-    var hintStatus = this.get('hintON'),
-        val = this.get('value');
-    if(!val || val && val.length===0) this.set('hintON', YES);
-    else this.set('hintON', NO);
+  init: function() {
+    var val = this.get('value');
+    this.set('hintON', (!val || val && val.length === 0));
     return sc_super();
   },
 

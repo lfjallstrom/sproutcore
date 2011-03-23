@@ -1,6 +1,6 @@
 // ==========================================================================
 // Project:   SproutCore - JavaScript Application Framework
-// Copyright: ©2006-2010 Sprout Systems, Inc. and contributors.
+// Copyright: ©2006-2011 Strobe Inc. and contributors.
 //            Portions ©2008-2010 Apple Inc. All rights reserved.
 // License:   Licensed under MIT license (see license.js)
 // ==========================================================================
@@ -23,7 +23,7 @@ SC.platform = {
 
     @property {Boolean}
   */
-  touch: ('createTouch' in document),
+  touch: ('createTouch' in document) && !navigator.userAgent.match('Chrome/9'), // Ugly hack for Chrome 9 issue
   
   bounceOnScroll: (/iPhone|iPad|iPod/).test(navigator.platform),
   pinchToZoom: (/iPhone|iPad|iPod/).test(navigator.platform),
@@ -58,7 +58,8 @@ SC.platform = {
     screen on an iPhone OS-based device, this property will be true.
     @property {Boolean}
   */
-  standalone: navigator.standalone,
+  standalone: !!navigator.standalone,
+
 
   /**
     Prefix for browser specific CSS attributes. Calculated later.

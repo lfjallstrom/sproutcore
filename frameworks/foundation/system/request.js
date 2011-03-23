@@ -1,6 +1,6 @@
 // ==========================================================================
 // Project:   SproutCore - JavaScript Application Framework
-// Copyright: ©2006-2010 Sprout Systems, Inc. and contributors.
+// Copyright: ©2006-2011 Strobe Inc. and contributors.
 //            Portions ©2008-2010 Apple Inc. All rights reserved.
 // License:   Licensed under MIT license (see license.js)
 // ==========================================================================
@@ -10,7 +10,7 @@ sc_require('system/response');
 /**
   @class
   
-  Implements support for Ajax requests using XHR, JSON-P and other prototcols.
+  Implements support for Ajax requests using XHR and other prototcols.
   
   SC.Request is much like an inverted version of the request/response objects
   you receive when implementing HTTP servers.  
@@ -68,7 +68,7 @@ SC.Request = SC.Object.extend(SC.Copyable, SC.Freezable,
     this.header('X-Requested-With', 'XMLHttpRequest');
     //TODO: we need to have the SC version in a SC variable.
     //For now I'm harcoding the variable.
-    this.header('X-SproutCore-Version', '1.4');
+    this.header('X-SproutCore-Version', SC.VERSION);
   },
   
   /**
