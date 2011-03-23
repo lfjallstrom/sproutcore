@@ -978,9 +978,6 @@ SC.CollectionView = SC.View.extend(
           } else {
             view.destroy();
           }
-          else {
-            view.destroy();
-          }
         }
       }
       
