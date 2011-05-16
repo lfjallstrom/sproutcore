@@ -8,13 +8,13 @@
 /**
   @class
 
-  A ManyArray is used to map an array of record ids back to their 
+  A ManyArray is used to map an array of record ids back to their
   record objects which will be materialized from the owner store on demand.
-  
-  Whenever you create a toMany() relationship, the value returned from the 
+
+  Whenever you create a toMany() relationship, the value returned from the
   property will be an instance of ManyArray.  You can generally customize the
   behavior of ManyArray by passing settings to the toMany() helper.
-  
+
   @extends SC.Enumerable
   @extends SC.Array
   @since SproutCore 1.0
@@ -30,33 +30,33 @@ SC.ManyArray = SC.Object.extend(SC.Enumerable, SC.Array,
     @property {String}
   */
   recordType: null,
-  
+
   /**
-    If set, the record will be notified whenever the array changes so that 
+    If set, the record will be notified whenever the array changes so that
     it can change its own state
-    
+
     @property {SC.Record}
   */
   record: null,
-  
+
   /**
     If set will be used by the many array to get an editable version of the
     storeIds from the owner.
-    
+
     @property {String}
   */
   propertyName: null,
-  
-  
+
+
   /**
     The ManyAttribute that created this array.
-  
+
     @property {SC.ManyAttribute}
   */
   manyAttribute: null,
-  
+
   /**
-    The store that owns this record array.  All record arrays must have a 
+    The store that owns this record array.  All record arrays must have a
     store to function properly.
 
     @property {SC.Store}
@@ -64,9 +64,9 @@ SC.ManyArray = SC.Object.extend(SC.Enumerable, SC.Array,
   store: function() {
     return this.get('record').get('store');
   }.property('record').cacheable(),
-  
+
   /**
-    The storeKey for the parent record of this many array.  Editing this 
+    The storeKey for the parent record of this many array.  Editing this
     array will place the parent record into a READY_DIRTY state.
 
     @property {Number}
@@ -77,20 +77,20 @@ SC.ManyArray = SC.Object.extend(SC.Enumerable, SC.Array,
 
 
   /**
-    Returns the storeIds in read only mode.  Avoids modifying the record 
+    Returns the storeIds in read only mode.  Avoids modifying the record
     unnecessarily.
-    
+
     @property {SC.Array}
   */
   readOnlyStoreIds: function() {
     return this.get('record').readAttribute(this.get('propertyName'));
   }.property(),
-  
-  
+
+
   /**
-    Returns an editable array of storeIds.  Marks the owner records as 
-    modified. 
-    
+    Returns an editable array of storeIds.  Marks the owner records as
+    modified.
+
     @property {SC.Array}
   */
   editableStoreIds: function() {
@@ -98,25 +98,25 @@ SC.ManyArray = SC.Object.extend(SC.Enumerable, SC.Array,
         storeKey = this.get('storeKey'),
         pname    = this.get('propertyName'),
         ret, hash;
-        
-    ret = store.readEditableProperty(storeKey, pname);    
+
+    ret = store.readEditableProperty(storeKey, pname);
     if (!ret) {
       hash = store.readEditableDataHash(storeKey);
-      ret = hash[pname] = [];      
+      ret = hash[pname] = [];
     }
-    
-    if (ret !== this._prevStoreIds) this.recordPropertyDidChange();
+
+//    if (this._prevStoreIds && ret !== this._prevStoreIds) this.recordPropertyDidChange();
     return ret ;
   }.property(),
-  
-  
+
+
   // ..........................................................
   // COMPUTED FROM OWNER
-  // 
-  
+  //
+
   /**
     Computed from owner many attribute
-    
+
     @property {Boolean}
   */
   isEditable: function() {
@@ -124,10 +124,10 @@ SC.ManyArray = SC.Object.extend(SC.Enumerable, SC.Array,
     var attr = this.manyAttribute;
     return attr ? attr.get('isEditable') : NO;
   }.property('manyAttribute').cacheable(),
-  
+
   /**
     Computed from owner many attribute
-    
+
     @property {String}
   */
   inverse: function() {
@@ -135,10 +135,10 @@ SC.ManyArray = SC.Object.extend(SC.Enumerable, SC.Array,
     var attr = this.manyAttribute;
     return attr ? attr.get('inverse') : null;
   }.property('manyAttribute').cacheable(),
-  
+
   /**
     Computed from owner many attribute
-    
+
     @property {Boolean}
   */
   isMaster: function() {
@@ -149,7 +149,7 @@ SC.ManyArray = SC.Object.extend(SC.Enumerable, SC.Array,
 
   /**
     Computed from owner many attribute
-    
+
     @property {Array}
   */
   orderBy: function() {
@@ -157,14 +157,14 @@ SC.ManyArray = SC.Object.extend(SC.Enumerable, SC.Array,
     var attr = this.manyAttribute;
     return attr ? attr.get('orderBy') : null;
   }.property("manyAttribute").cacheable(),
-  
+
   // ..........................................................
   // ARRAY PRIMITIVES
-  // 
+  //
 
   /** @private
     Returned length is a pass-through to the storeIds array.
-    
+
     @property {Number}
   */
   length: function() {
@@ -177,12 +177,12 @@ SC.ManyArray = SC.Object.extend(SC.Enumerable, SC.Array,
     records.
   */
   objectAt: function(idx) {
-    var recs      = this._records, 
+    var recs      = this._records,
         storeIds  = this.get('readOnlyStoreIds'),
         store     = this.get('store'),
         recordType = this.get('recordType'),
         storeKey, ret, storeId ;
-        
+
     if (!storeIds || !store) return undefined; // nothing to do
     if (recs && (ret=recs[idx])) return ret ; // cached
 
@@ -191,14 +191,14 @@ SC.ManyArray = SC.Object.extend(SC.Enumerable, SC.Array,
     storeId = storeIds.objectAt(idx);
     if (storeId) {
 
-      // if record is not loaded already, then ask the data source to 
+      // if record is not loaded already, then ask the data source to
       // retrieve it
       storeKey = store.storeKeyFor(recordType, storeId);
-      
+
       if (store.readStatus(storeKey) === SC.Record.EMPTY) {
         store.retrieveRecord(recordType, null, storeKey);
       }
-      
+
       recs[idx] = ret = store.materializeRecord(storeKey);
     }
     return ret ;
@@ -209,12 +209,12 @@ SC.ManyArray = SC.Object.extend(SC.Enumerable, SC.Array,
     records, which can be converted to storeIds.
   */
   replace: function(idx, amt, recs) {
-    
+
     if (!this.get('isEditable')) {
       throw "%@.%@[] is not editable".fmt(this.get('record'), this.get('propertyName'));
     }
-    
-    var storeIds = this.get('editableStoreIds'), 
+
+    var storeIds = this.get('editableStoreIds'),
         len      = recs ? (recs.get ? recs.get('length') : recs.length) : 0,
         record   = this.get('record'),
         pname    = this.get('propertyName'),
@@ -224,24 +224,24 @@ SC.ManyArray = SC.Object.extend(SC.Enumerable, SC.Array,
     ids = [] ;
     for(i=0;i<len;i++) ids[i] = recs.objectAt(i).get('id');
 
-    // if we have an inverse - collect the list of records we are about to 
+    // if we have an inverse - collect the list of records we are about to
     // remove
     inverse = this.get('inverse');
     if (inverse && amt>0) {
       toRemove = SC.ManyArray._toRemove;
       if (toRemove) SC.ManyArray._toRemove = null; // reuse if possible
       else toRemove = [];
-      
+
       for(i=0;i<amt;i++) toRemove[i] = this.objectAt(idx + i);
     }
-    
-    // pass along - if allowed, this should trigger the content observer 
+
+    // pass along - if allowed, this should trigger the content observer
     storeIds.replace(idx, amt, ids);
 
     // ok, notify records that were removed then added; this way reordered
     // objects are added and removed
     if (inverse) {
-      
+
       // notive removals
       for(i=0;i<amt;i++) {
         inverseRecord = toRemove[i];
@@ -264,50 +264,51 @@ SC.ManyArray = SC.Object.extend(SC.Enumerable, SC.Array,
           attr.inverseDidAddRecord(inverseRecord, inverse, record, pname);
         }
       }
-      
+
     }
 
     // only mark record dirty if there is no inverse or we are master
     if (record && (!inverse || this.get('isMaster'))) {
       record.recordDidChange(pname);
-    } 
-    
+    }
+
+    this.enumerableContentDidChange(idx, amt, len - amt);
     return this;
   },
-  
+
   // ..........................................................
   // INVERSE SUPPORT
-  // 
-  
+  //
+
   /**
     Called by the ManyAttribute whenever a record is removed on the inverse
     of the relationship.
-    
+
     @param {SC.Record} inverseRecord the record that was removed
     @returns {SC.ManyArray} receiver
   */
   removeInverseRecord: function(inverseRecord) {
-    
+
     if (!inverseRecord) return this; // nothing to do
     var id = inverseRecord.get('id'),
         storeIds = this.get('editableStoreIds'),
         idx      = (storeIds && id) ? storeIds.indexOf(id) : -1,
         record;
-    
+
     if (idx >= 0) {
       storeIds.removeAt(idx);
       if (this.get('isMaster') && (record = this.get('record'))) {
         record.recordDidChange(this.get('propertyName'));
       }
     }
-    
+
     return this;
   },
 
   /**
     Called by the ManyAttribute whenever a record is added on the inverse
     of the relationship.
-    
+
     @param {SC.Record} record the record this array is a part of
     @param {String} key the key this array represents
     @param {SC.Record} inverseRecord the record that was removed
@@ -315,27 +316,27 @@ SC.ManyArray = SC.Object.extend(SC.Enumerable, SC.Array,
     @returns {SC.ManyArray} receiver
   */
   addInverseRecord: function(inverseRecord) {
-    
+
     if (!inverseRecord) return this;
     var id = inverseRecord.get('id'),
         storeIds = this.get('editableStoreIds'),
         orderBy  = this.get('orderBy'),
         len      = storeIds.get('length'),
         idx, record;
-        
+
     // find idx to insert at.
     if (orderBy) {
       idx = this._findInsertionLocation(inverseRecord, 0, len, orderBy);
     } else idx = len;
-    
+
     storeIds.insertAt(idx, inverseRecord.get('id'));
     if (this.get('isMaster') && (record = this.get('record'))) {
       record.recordDidChange(this.get('propertyName'));
     }
-    
+
     return this;
   },
-  
+
   // binary search to find insertion location
   _findInsertionLocation: function(rec, min, max, orderBy) {
     var idx   = min+Math.floor((max-min)/2),
@@ -353,7 +354,7 @@ SC.ManyArray = SC.Object.extend(SC.Enumerable, SC.Array,
   _compare: function(a, b, orderBy) {
     var t = SC.typeOf(orderBy),
         ret, idx, len;
-        
+
     if (t === SC.T_FUNCTION) ret = orderBy(a, b);
     else if (t === SC.T_STRING) ret = SC.compare(a,b);
     else {
@@ -364,30 +365,30 @@ SC.ManyArray = SC.Object.extend(SC.Enumerable, SC.Array,
 
     return ret ;
   },
-  
+
   // ..........................................................
   // INTERNAL SUPPORT
-  //  
+  //
 
-  /** @private 
+  /** @private
     Invoked whenever the storeIds array changes.  Observes changes.
   */
   recordPropertyDidChange: function(keys) {
-    
+
     if (keys && !keys.contains(this.get('propertyName'))) return this;
-    
+
     var storeIds = this.get('readOnlyStoreIds');
     var prev = this._prevStoreIds, f = this._storeIdsContentDidChange;
 
     if (storeIds === prev) return this; // nothing to do
 
-    if (prev) prev.removeObserver('[]', this, f);
+//    if (prev) prev.removeObserver('[]', this, f);
     this._prevStoreIds = storeIds;
-    if (storeIds) storeIds.addObserver('[]', this, f);
+//    if (storeIds) storeIds.addObserver('[]', this, f);
 
     var rev = (storeIds) ? storeIds.propertyRevision : -1 ;
     this._storeIdsContentDidChange(storeIds, '[]', storeIds, rev);
-    
+
   },
 
   /** @private
@@ -399,7 +400,7 @@ SC.ManyArray = SC.Object.extend(SC.Enumerable, SC.Array,
     this._records = null ; // clear cache
     this.enumerableContentDidChange();
   },
-  
+
   /** @private */
   unknownProperty: function(key, value) {
     var ret = this.reducedProperty(key, value);
@@ -411,5 +412,5 @@ SC.ManyArray = SC.Object.extend(SC.Enumerable, SC.Array,
     sc_super();
     this.recordPropertyDidChange();
   }
-  
+
 }) ;
