@@ -2062,8 +2062,9 @@ SC.mixin(SC.Touch, {
   Invoked when the document is ready, but before main is called.  Creates
   an instance and sets up event listeners as needed.
 */
-SC.ready(SC.RootResponder, SC.RootResponder.ready = function() {
-  var r;
-  r = SC.RootResponder.responder = SC.RootResponder.create() ;
-  r.setup() ;
-});
+//SC.ready(SC.RootResponder, SC.RootResponder.ready = function() {
+//var r;
+//r = SC.RootResponder.responder = SC.RootResponder.create() ;
+//r.setup() ;
+SC.RootResponder.responder = SC.RootResponder.create() ;
+//});
