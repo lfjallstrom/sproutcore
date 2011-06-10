@@ -265,7 +265,7 @@ SC.Response = SC.Object.extend(
 
         // notify listeners if we weren't cancelled.
         if (!this.get('isCancelled')) this.notify();
-      }, this);
+      }, this, true);
     }
     
     // no matter what, remove from inflight queue
