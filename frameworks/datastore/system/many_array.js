@@ -238,6 +238,10 @@ SC.ManyArray = SC.Object.extend(SC.Enumerable, SC.Array,
     // pass along - if allowed, this should trigger the content observer
     storeIds.replace(idx, amt, ids);
 
+    if (this._records) {
+        this._records.replace(idx, amt, recs);
+    }
+
     // ok, notify records that were removed then added; this way reordered
     // objects are added and removed
     if (inverse) {
