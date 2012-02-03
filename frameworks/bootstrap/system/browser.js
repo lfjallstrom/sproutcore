@@ -9,21 +9,22 @@ var SC = SC || { BUNDLE_INFO: {}, LAZY_INSTANTIATION: {} };
 
 SC.browser = (function() {
   var userAgent = navigator.userAgent.toLowerCase(),
-      version = (userAgent.match( /.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/ ) || [])[1] ;
+      version = (userAgent.match( /.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/ ) || [])[1],
+      chrome = (/chrome/).test( userAgent ) ? version : 0;
 
   var browser = {
     version: version,
-    safari: (/webkit/).test( userAgent ) ? version : 0,
+    chrome: chrome,
+    safari: chrome ? 0 : (/webkit/).test( userAgent ) ? version : 0,
     opera: (/opera/).test( userAgent ) ? version : 0,
     msie: (/msie/).test( userAgent ) && !(/opera/).test( userAgent ) ? version : 0,
     mozilla: (/mozilla/).test( userAgent ) && !(/(compatible|webkit)/).test( userAgent ) ? version : 0,
     mobileSafari: (/apple.*mobile.*safari/).test(userAgent) ? version : 0,
-    chrome: (/chrome/).test( userAgent ) ? version : 0,
     windows: !!(/(windows)/).test(userAgent),
     mac: !!((/(macintosh)/).test(userAgent) || (/(mac os x)/).test(userAgent)),
     language: (navigator.language || navigator.browserLanguage).split('-', 1)[0]
   };
   
-    browser.current = browser.msie ? 'msie' : browser.mozilla ? 'mozilla' : browser.safari ? 'safari' : browser.opera ? 'opera' : 'unknown' ;
+  browser.current = browser.chrome ? 'chrome' : browser.msie ? 'msie' : browser.mozilla ? 'mozilla' : browser.safari ? 'safari' : browser.opera ? 'opera' : 'unknown' ;
   return browser ;
 })();
