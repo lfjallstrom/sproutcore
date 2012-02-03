@@ -23,10 +23,11 @@ SC.mixin(SC.browser, (function() {
     isWindows: !!browser.windows,
     isMac: !!browser.mac,
     isiPhone: ((!!browser.mobileSafari || !!browser.standalone) && (viewport == 320 || viewport == 480)),
+    isChrome: !!browser.chrome,
 
     /**
       The current browser name.  This is useful for switch statements. */
-    current: browser.msie ? 'msie' : browser.mozilla ? 'mozilla' : browser.safari ? 'safari' : browser.opera ? 'opera' : 'unknown',
+    current: browser.chrome ? 'chrome' : browser.msie ? 'msie' : browser.mozilla ? 'mozilla' : browser.safari ? 'safari' : browser.opera ? 'opera' : 'unknown',
     
     /**
       Pass any number of arguments, and this will check them against the browser
