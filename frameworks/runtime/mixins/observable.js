@@ -1086,7 +1086,7 @@ SC.Observable = {
     if (pathType === "string" || (pathType === "object" && (target instanceof Array))) {
       binding = this[toKey + 'BindingDefault'] || SC.Binding;
       binding = binding.beget().from(target) ;
-    } else binding = target ;
+    } else binding = target.beget();
 
     // finish configuring the binding and then connect it.
     binding = binding.to(toKey, this).connect() ;
